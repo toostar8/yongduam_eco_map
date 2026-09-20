@@ -1,0 +1,1667 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#247653">
+  <title>제주 식물 탐사 도감</title>
+
+  <!-- Leaflet 지도 라이브러리 -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
+
+  <style>
+    :root {
+      --green: #247653;
+      --dark-green: #174c36;
+      --light-green: #eaf5ed;
+      --cream: #fffdf6;
+      --text: #25352b;
+      --muted: #718078;
+      --border: #dce8de;
+      --shadow: 0 8px 28px rgba(29, 70, 47, .13);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Noto Sans KR", sans-serif;
+      color: var(--text);
+      background: var(--cream);
+    }
+
+    button, select, input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .topbar {
+      min-height: 70px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 500;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      font-size: 30px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 20px;
+      color: var(--dark-green);
+    }
+
+    .brand p {
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    select, .btn {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 13px;
+      background: white;
+      color: var(--text);
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: white;
+      border-color: var(--green);
+      font-weight: 700;
+    }
+
+    .btn-primary:hover {
+      background: var(--dark-green);
+    }
+
+    .hero {
+      padding: 18px;
+      background: var(--light-green);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .hero h2 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #587064;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .progress-wrap {
+      min-width: 155px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 7px;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 9px;
+      border-radius: 20px;
+      background: #d2e5d6;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      background: var(--green);
+      transition: width .3s;
+    }
+
+    #map {
+      height: min(66vh, 650px);
+      min-height: 380px;
+      width: 100%;
+      background: #e5eee4;
+      z-index: 1;
+    }
+
+    .map-hint {
+      padding: 11px 16px;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .bottom-section {
+      padding: 20px 16px 28px;
+      max-width: 1050px;
+      margin: auto;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .section-heading h2 {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .plant-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 12px;
+    }
+
+    .plant-card {
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+    }
+
+    .plant-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .plant-card img {
+      width: 100%;
+      height: 112px;
+      object-fit: cover;
+      background: #e9efe8;
+      display: block;
+    }
+
+    .plant-card-body {
+      padding: 11px;
+    }
+
+    .plant-card h3 {
+      margin: 0 0 5px;
+      font-size: 14px;
+    }
+
+    .plant-card p {
+      font-size: 11px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .status {
+      display: inline-block;
+      font-size: 10px;
+      border-radius: 20px;
+      padding: 4px 8px;
+      margin-top: 8px;
+      background: #edf1ee;
+      color: #637168;
+      font-weight: 700;
+    }
+
+    .status.collected {
+      background: #dff3e5;
+      color: #17643b;
+    }
+
+    footer {
+      padding: 22px 16px;
+      background: #174c36;
+      color: #f4fff6;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    footer strong {
+      font-size: 14px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(14, 32, 22, .58);
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: 22px;
+      width: min(100%, 520px);
+      max-height: 88vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .modal-header {
+      padding: 17px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 2;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 19px;
+    }
+
+    .close-btn {
+      border: 0;
+      background: #edf3ee;
+      color: var(--dark-green);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .modal-content {
+      padding: 18px;
+    }
+
+    .detail-photo {
+      width: 100%;
+      max-height: 260px;
+      object-fit: cover;
+      border-radius: 15px;
+      background: #edf2ed;
+      margin-bottom: 15px;
+    }
+
+    .detail-name {
+      margin: 0 0 5px;
+      font-size: 23px;
+      color: var(--dark-green);
+    }
+
+    .detail-scientific {
+      font-style: italic;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .detail-field {
+      padding: 12px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .detail-field strong {
+      display: block;
+      font-size: 12px;
+      color: var(--green);
+      margin-bottom: 5px;
+    }
+
+    .detail-field p {
+      margin: 0;
+      line-height: 1.65;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+
+    .unknown {
+      color: #9aa69e;
+      letter-spacing: 2px;
+    }
+
+    .collection-toast {
+      position: fixed;
+      z-index: 3000;
+      top: 90px;
+      left: 50%;
+      transform: translate(-50%, -15px);
+      opacity: 0;
+      pointer-events: none;
+      background: #fff8d9;
+      border: 2px solid #edc94c;
+      color: #684d08;
+      border-radius: 20px;
+      padding: 18px 25px;
+      text-align: center;
+      font-weight: 800;
+      font-size: 22px;
+      box-shadow: var(--shadow);
+      transition: opacity .25s, transform .25s;
+      width: max-content;
+      max-width: 90%;
+    }
+
+    .collection-toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .collection-toast small {
+      display: block;
+      font-size: 13px;
+      margin-top: 5px;
+      font-weight: 500;
+    }
+
+    .camera-box {
+      padding: 18px;
+    }
+
+    .camera-box video,
+    .camera-box canvas,
+    .camera-box .preview-image {
+      width: 100%;
+      max-height: 340px;
+      object-fit: contain;
+      border-radius: 14px;
+      background: #17251c;
+      display: block;
+      margin: 12px 0;
+    }
+
+    .camera-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .camera-actions .btn {
+      flex: 1;
+    }
+
+    .notice {
+      background: #f1f7f1;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 12px;
+      color: #53665a;
+      line-height: 1.6;
+      margin: 12px 0;
+    }
+
+    .distance {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 7px;
+    }
+
+    .empty-state {
+      color: var(--muted);
+      text-align: center;
+      padding: 30px 10px;
+      grid-column: 1 / -1;
+      font-size: 13px;
+    }
+
+    @media (max-width: 560px) {
+      .topbar {
+        padding: 11px;
+      }
+
+      .brand h1 {
+        font-size: 16px;
+      }
+
+      .brand p {
+        display: none;
+      }
+
+      .top-actions {
+        gap: 5px;
+      }
+
+      select, .btn {
+        padding: 9px 10px;
+        font-size: 12px;
+      }
+
+      #map {
+        height: 58vh;
+        min-height: 350px;
+      }
+
+      .plant-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon">🌿</span>
+      <div>
+        <h1 id="appTitle">제주 식물 탐사 도감</h1>
+        <p id="appSubtitle">탐사하며 발견하고, 나만의 도감을 완성하세요!</p>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <select id="languageSelect" aria-label="언어 선택">
+        <option value="ko">한국어</option>
+        <option value="en">English</option>
+        <option value="zh">中文</option>
+        <option value="ja">日本語</option>
+      </select>
+      <button class="btn btn-primary" id="openDexBtn">
+        📖 <span id="dexButtonText">식물 도감</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h2 id="heroTitle">오늘의 식물 탐사를 시작해 볼까요?</h2>
+      <p id="heroDescription">
+        지도에서 식물의 위치를 확인하고 직접 찾아가 보세요.<br>
+        가까이 다가가 사진을 찍으면 식물을 수집할 수 있어요.
+      </p>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progressText">수집 진행도</span>
+        <span id="progressCount">0 / 17</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+  </section>
+
+  <div id="map"></div>
+
+  <div class="map-hint" id="mapHint">
+    📍 GPS 버튼을 눌러 현재 위치를 확인하세요. 지도 마커를 누르면 식물 정보를 볼 수 있습니다.
+    식물 수집은 설정된 위치 반경 안에서 가능합니다.
+  </div>
+
+  <section class="bottom-section">
+    <div class="section-heading">
+      <h2 id="nearbyTitle">🌱 탐사 식물 목록</h2>
+      <button class="btn" id="locateBtn">📍 <span id="locateText">내 위치 찾기</span></button>
+    </div>
+    <div class="plant-list" id="plantList"></div>
+  </section>
+
+  <footer>
+    <strong id="footerTitle">제주 식물 탐사 프로젝트</strong><br>
+    <span id="footerDescription">
+      제주대학교사범대학부설고등학교 1학년 학생들이 자연탐사 프로젝트로 만든 프로그램입니다.
+    </span>
+  </footer>
+
+  <!-- 식물 도감 모달 -->
+  <div class="modal" id="dexModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="dexModalTitle">📖 식물 도감</h2>
+        <button class="close-btn" data-close="dexModal" aria-label="닫기">×</button>
+      </div>
+      <div class="modal-content">
+        <div class="progress-label">
+          <span id="dexProgressText">수집한 식물</span>
+          <span id="dexProgressCount">0 / 17</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="dexProgressFill"></div>
+        </div>
+        <div style="height:16px"></div>
+        <div class="plant-list" id="dexList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 식물 상세 정보 모달 -->
+  <div class="modal" id="detailModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="detailModalTitle">식물 정보</h2>
+        <button class="close-btn" data-close="detailModal" aria-label="닫기">×</button>
+      </div>
+      <div class="modal-content" id="detailContent"></div>
+    </div>
+  </div>
+
+  <!-- 사진 촬영 및 확인 모달 -->
+  <div class="modal" id="cameraModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="cameraTitle">📷 식물 촬영</h2>
+        <button class="close-btn" data-close="cameraModal" id="cameraCloseBtn" aria-label="닫기">×</button>
+      </div>
+      <div class="camera-box">
+        <p id="cameraInstruction">식물 사진을 촬영하거나 사진 파일을 선택하세요.</p>
+
+        <video id="cameraVideo" autoplay playsinline style="display:none"></video>
+        <canvas id="cameraCanvas" style="display:none"></canvas>
+        <img id="photoPreview" class="preview-image" alt="촬영한 식물 사진" style="display:none">
+
+        <input type="file" id="photoInput" accept="image/*" capture="environment">
+
+        <div class="camera-actions" style="margin-top:12px">
+          <button class="btn btn-primary" id="startCameraBtn">카메라 열기</button>
+          <button class="btn" id="takePhotoBtn" style="display:none">사진 촬영</button>
+        </div>
+
+        <div class="notice" id="cameraNotice">
+          사진을 촬영한 후 식물이 맞는지 직접 확인해 주세요.
+          사진은 이 브라우저 안에서만 미리보기로 사용됩니다.
+        </div>
+
+        <div id="confirmArea" style="display:none">
+          <p id="confirmQuestion"><strong>사진 속 식물이 맞나요?</strong></p>
+          <div class="camera-actions">
+            <button class="btn btn-primary" id="confirmCollectBtn">네, 수집하기!</button>
+            <button class="btn" id="retakeBtn">다시 촬영</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="collection-toast" id="collectionToast">
+    🎉 식물 수집!
+    <small id="toastPlantName"></small>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    /* =========================================================
+       1. 식물 자료 입력 영역
+       ---------------------------------------------------------
+       아래 EXAMPLE 항목을 실제 식물 17종 자료로 교체하세요.
+
+       image: "images/plant01.jpg"처럼 저장한 사진 경로
+       lat / lng: 식물의 위도와 경도
+       ko / en / zh / ja: 언어별 표시 내용
+
+       아직 조사하지 않은 번역은 한국어 내용을 임시로 넣어도
+       프로그램이 작동합니다.
+       ========================================================= */
+
+    const plants = [
+      {
+        id: 1,
+        image: "images/plant01.jpg",
+        lat: 33.450000,
+        lng: 126.570000,
+        ko: {
+          name: "식물 1 이름",
+          scientific: "Scientific name 1",
+          distribution: "주요 분포지를 입력하세요.",
+          family: "과명을 입력하세요.",
+          feature: "식물의 특징과 짧은 소개를 입력하세요."
+        },
+        en: {
+          name: "Plant 1",
+          scientific: "Scientific name 1",
+          distribution: "Enter the main distribution area.",
+          family: "Enter the family.",
+          feature: "Enter a short description and features."
+        },
+        zh: {
+          name: "植物 1",
+          scientific: "Scientific name 1",
+          distribution: "请输入主要分布地区。",
+          family: "请输入科名。",
+          feature: "请输入植物特征和简短介绍。"
+        },
+        ja: {
+          name: "植物 1",
+          scientific: "Scientific name 1",
+          distribution: "主な分布地を入力してください。",
+          family: "科名を入力してください。",
+          feature: "特徴と短い紹介を入力してください。"
+        }
+      },
+      {
+        id: 2,
+        image: "images/plant02.jpg",
+        lat: 33.451000,
+        lng: 126.571000,
+        ko: { name: "식물 2 이름", scientific: "Scientific name 2", distribution: "분포지", family: "과명", feature: "특징 및 소개" },
+        en: { name: "Plant 2", scientific: "Scientific name 2", distribution: "Distribution", family: "Family", feature: "Features and description" },
+        zh: { name: "植物 2", scientific: "Scientific name 2", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
+        ja: { name: "植物 2", scientific: "Scientific name 2", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
+      },
+      {
+        id: 3,
+        image: "images/plant03.jpg",
+        lat: 33.452000,
+        lng: 126.572000,
+        ko: { name: "식물 3 이름", scientific: "Scientific name 3", distribution: "분포지", family: "과명", feature: "특징 및 소개" },
+        en: { name: "Plant 3", scientific: "Scientific name 3", distribution: "Distribution", family: "Family", feature: "Features and description" },
+        zh: { name: "植物 3", scientific: "Scientific name 3", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
+        ja: { name: "植物 3", scientific: "Scientific name 3", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
+      },
+      {
+        id: 4,
+        image: "images/plant04.jpg",
+        lat: 33.453000,
+        lng: 126.573000,
+        ko: { name: "식물 4 이름", scientific: "Scientific name 4", distribution: "분포지", family: "과명", feature: "특징 및 소개" },
+        en: { name: "Plant 4", scientific: "Scientific name 4", distribution: "Distribution", family: "Family", feature: "Features and description" },
+        zh: { name: "植物 4", scientific: "Scientific name 4", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
+        ja: { name: "植物 4", scientific: "Scientific name 4", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
+      },
+      {
+        id: 5,
+        image: "images/plant05.jpg",
+        lat: 33.454000,
+        lng: 126.574000,
+        ko: { name: "식물 5 이름", scientific: "Scientific name 5", distribution: "분포지", family: "과명", feature: "특징 및 소개" },
+        en: { name: "Plant 5", scientific: "Scientific name 5", distribution: "Distribution", family: "Family", feature: "Features and description" },
+        zh: { name: "植物 5", scientific: "Scientific name 5", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
+        ja: { name: "植物 5", scientific: "Scientific name 5", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
+      },
+      {
+        id: 6,
+        image: "images/plant06.jpg",
+        lat: 33.455000,
+        lng: 126.575000,
+        ko: { name: "식물 6 이름", scientific: "Scientific name 6", distribution: "분포지", family: "과명", feature: "특징 및 소개" },
+        en: { name: "Plant 6", scientific: "Scientific name 6", distribution: "Distribution", family: "Family", feature: "Features and description" },
+        zh: { name: "植物 6", scientific: "Scientific name 6", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
+        ja: { name: "植物 6", scientific: "Scientific name 6", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
+      },
+      {
+        id: 7,
+        image: "images/plant07.jpg",
+        lat: 33.456000,
+        lng: 126.576000,
+        ko: { name: "식물 7 이름", scientific: "Scientific name 7", distribution: "분포지", family: "과명", feature: "특징 및 소개" },
+        en: { name: "Plant 7", scientific: "Scientific name 7", distribution: "Distribution", family: "Family", feature: "Features and description" },
+        zh: { name: "植物 7", scientific: "Scientific name 7", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
+        ja: { name: "植物 7", scientific: "Scientific name 7", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
+      },
+      {
+        id: 8,
+        image: "images/plant08.jpg",
+        lat: 33.457000,
+        lng: 126.577000,
+        ko: { name: "식물 8 이름", scientific: "Scientific name 8", distribution: "분포지", family: "과명", feature: "특징 및 소개" },
+        en: { name: "Plant 8", scientific: "Scientific name 8", distribution: "Distribution", family: "Family", feature: "Features and description" },
+        zh: { name: "植物 8", scientific: "Scientific name 8", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
+        ja: { name: "植物 8", scientific: "Scientific name 8", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
+      },
+      {
+        id: 9,
+        image: "images/plant09.jpg",
+        lat: 33.458000,
+        lng: 126.578000,
+        ko: { name: "식물 9 이름", scientific: "Scientific name 9", distribution: "분포지", family: "과명", feature: "특징 및 소개" },
+        en: { name: "Plant 9", scientific: "Scientific name 9", distribution: "Distribution", family: "Family", feature: "Features and description" },
+        zh: { name: "植物 9", scientific: "Scientific name 9", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
+        ja: { name: "植物 9", scientific: "Scientific name 9", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
+      },
+      {
+        id: 10,
+        image: "images/plant10.jpg",
+        lat: 33.459000,
+        lng: 126.579000,
+        ko: { name: "식물 10 이름", scientific: "Scientific name 10", distribution: "분포지", family: "과명", feature: "특징 및 소개" },
+        en: { name: "Plant 10", scientific: "Scientific name 10", distribution: "Distribution", family: "Family", feature: "Features and description" },
+        zh: { name: "植物 10", scientific: "Scientific name 10", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
+        ja: { name: "植物 10", scientific: "Scientific name 10", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
+      },
+      {
+        id: 11,
+        image: "images/plant11.jpg",
+        lat: 33.460000,
+        lng: 126.580000,
+        ko: { name: "식물 11 이름", scientific: "Scientific name 11", distribution: "분포지", family: "과명", feature: "특징 및 소개" },
+        en: { name: "Plant 11", scientific: "Scientific name 11", distribution: "Distribution", family: "Family", feature: "Features and description" },
+        zh: { name: "植物 11", scientific: "Scientific name 11", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
+        ja: { name: "植物 11", scientific: "Scientific name 11", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
+      },
+      {
+        id: 12,
+        image: "images/plant12.jpg",
+        lat: 33.461000,
+        lng: 126.581000,
+        ko: { name: "식물 12 이름", scientific: "Scientific name 12", distribution: "분포지", family: "과명", feature: "특징 및 소개" },
+        en: { name: "Plant 12", scientific: "Scientific name 12", distribution: "Distribution", family: "Family", feature: "Features and description" },
+        zh: { name: "植物 12", scientific: "Scientific name 12", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
+        ja: { name: "植物 12", scientific: "Scientific name 12", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
+      },
+      {
+        id: 13,
+        image: "images/plant13.jpg",
+        lat: 33.462000,
+        lng: 126.582000,
+        ko: { name: "식물 13 이름", scientific: "Scientific name 13", distribution: "분포지", family: "과명", feature: "특징 및 소개" },
+        en: { name: "Plant 13", scientific: "Scientific name 13", distribution: "Distribution", family: "Family", feature: "Features and description" },
+        zh: { name: "植物 13", scientific: "Scientific name 13", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
+        ja: { name: "植物 13", scientific: "Scientific name 13", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
+      },
+      {
+        id: 14,
+        image: "images/plant14.jpg",
+        lat: 33.463000,
+        lng: 126.583000,
+        ko: { name: "식물 14 이름", scientific: "Scientific name 14", distribution: "분포지", family: "과명", feature: "특징 및 소개" },
+        en: { name: "Plant 14", scientific: "Scientific name 14", distribution: "Distribution", family: "Family", feature: "Features and description" },
+        zh: { name: "植物 14", scientific: "Scientific name 14", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
+        ja: { name: "植物 14", scientific: "Scientific name 14", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
+      },
+      {
+        id: 15,
+        image: "images/plant15.jpg",
+        lat: 33.464000,
+        lng: 126.584000,
+        ko: { name: "식물 15 이름", scientific: "Scientific name 15", distribution: "분포지", family: "과명", feature: "특징 및 소개" },
+        en: { name: "Plant 15", scientific: "Scientific name 15", distribution: "Distribution", family: "Family", feature: "Features and description" },
+        zh: { name: "植物 15", scientific: "Scientific name 15", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
+        ja: { name: "植物 15", scientific: "Scientific name 15", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
+      },
+      {
+        id: 16,
+        image: "images/plant16.jpg",
+        lat: 33.465000,
+        lng: 126.585000,
+        ko: { name: "식물 16 이름", scientific: "Scientific name 16", distribution: "분포지", family: "과명", feature: "특징 및 소개" },
+        en: { name: "Plant 16", scientific: "Scientific name 16", distribution: "Distribution", family: "Family", feature: "Features and description" },
+        zh: { name: "植物 16", scientific: "Scientific name 16", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
+        ja: { name: "植物 16", scientific: "Scientific name 16", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
+      },
+      {
+        id: 17,
+        image: "images/plant17.jpg",
+        lat: 33.466000,
+        lng: 126.586000,
+        ko: { name: "식물 17 이름", scientific: "Scientific name 17", distribution: "분포지", family: "과명", feature: "특징 및 소개" },
+        en: { name: "Plant 17", scientific: "Scientific name 17", distribution: "Distribution", family: "Family", feature: "Features and description" },
+        zh: { name: "植物 17", scientific: "Scientific name 17", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
+        ja: { name: "植物 17", scientific: "Scientific name 17", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
+      }
+    ];
+
+    /* =========================================================
+       2. 기본 설정
+       ========================================================= */
+
+    const COLLECTION_RADIUS_METERS = 40;
+    const STORAGE_KEY = "jejuPlantDexCollected_v1";
+
+    const words = {
+      ko: {
+        title: "제주 식물 탐사 도감",
+        subtitle: "탐사하며 발견하고, 나만의 도감을 완성하세요!",
+        heroTitle: "오늘의 식물 탐사를 시작해 볼까요?",
+        heroDescription: "지도에서 식물의 위치를 확인하고 직접 찾아가 보세요. 사진을 찍으면 식물을 수집할 수 있어요.",
+        dex: "식물 도감",
+        progress: "수집 진행도",
+        nearby: "🌱 탐사 식물 목록",
+        locate: "내 위치 찾기",
+        hint: "📍 GPS로 현재 위치를 확인하세요. 마커를 누르면 식물 정보를 볼 수 있습니다.",
+        footerTitle: "제주 식물 탐사 프로젝트",
+        footerDescription: "제주대학교사범대학부설고등학교 1학년 학생들이 자연탐사 프로젝트로 만든 프로그램입니다.",
+        collected: "수집 완료",
+        notCollected: "미수집",
+        distribution: "주요 분포지",
+        family: "과명",
+        feature: "특징 및 소개",
+        locked: "아직 수집하지 않았어요.",
+        camera: "📷 식물 촬영",
+        cameraInstruction: "식물 사진을 촬영하거나 사진 파일을 선택하세요.",
+        cameraNotice: "사진을 촬영한 후 식물이 맞는지 직접 확인해 주세요.",
+        startCamera: "카메라 열기",
+        takePhoto: "사진 촬영",
+        confirm: "네, 수집하기!",
+        retake: "다시 촬영",
+        confirmQuestion: "사진 속 식물이 맞나요?",
+        noGps: "위치 정보를 가져올 수 없습니다. 위치 권한을 확인해 주세요.",
+        gpsLoading: "현재 위치를 확인하고 있습니다...",
+        gpsSuccess: "현재 위치를 지도에 표시했습니다.",
+        tooFar: "아직 식물 위치와 거리가 있어요. 조금 더 가까이 이동해 주세요.",
+        already: "이미 수집한 식물입니다!",
+        success: "🎉 식물 수집!",
+        permission: "카메라 권한을 허용해 주세요. 또는 사진 파일을 선택할 수 있습니다.",
+        photoFirst: "먼저 사진을 촬영하거나 선택해 주세요.",
+        noPlants: "등록된 식물이 없습니다.",
+        distance: "현재 위치와의 거리",
+        meters: "m",
+        kilometers: "km",
+        openDex: "도감 열기",
+        allCollected: "모든 식물을 수집했어요! 축하합니다!",
+        gpsButton: "📍 내 위치 찾기",
+        plant: "식물",
+        unknown: "?",
+        cameraError: "카메라를 열 수 없습니다. 브라우저 권한을 확인하거나 사진 파일을 선택해 주세요."
+      },
+      en: {
+        title: "Jeju Plant Explorer",
+        subtitle: "Explore, discover, and complete your plant dex!",
+        heroTitle: "Ready to start exploring?",
+        heroDescription: "Find plants on the map. Take a photo nearby to collect each plant.",
+        dex: "Plant Dex",
+        progress: "Collection progress",
+        nearby: "🌱 Plants to explore",
+        locate: "My location",
+        hint: "📍 Find your location with GPS. Tap a marker to view plant details.",
+        footerTitle: "Jeju Plant Exploration Project",
+        footerDescription: "This program was created by first-year students of Jeju National University High School for a nature exploration project.",
+        collected: "Collected",
+        notCollected: "Not collected",
+        distribution: "Distribution",
+        family: "Family",
+        feature: "Features and description",
+        locked: "Not collected yet.",
+        camera: "📷 Take a photo",
+        cameraInstruction: "Take a plant photo or choose an image file.",
+        cameraNotice: "After taking a photo, check whether it is the correct plant.",
+        startCamera: "Open camera",
+        takePhoto: "Take photo",
+        confirm: "Yes, collect!",
+        retake: "Retake",
+        confirmQuestion: "Is this the correct plant?",
+        noGps: "Unable to get your location. Check location permissions.",
+        gpsLoading: "Finding your location...",
+        gpsSuccess: "Your location has been added to the map.",
+        tooFar: "You are still too far away. Move closer to the plant location.",
+        already: "This plant has already been collected!",
+        success: "🎉 Plant collected!",
+        permission: "Allow camera access or choose an image file.",
+        photoFirst: "Take or select a photo first.",
+        noPlants: "No plants registered.",
+        distance: "Distance from you",
+        meters: "m",
+        kilometers: "km",
+        openDex: "Open dex",
+        allCollected: "You collected every plant! Congratulations!",
+        gpsButton: "📍 My location",
+        plant: "Plant",
+        unknown: "?",
+        cameraError: "Could not open the camera. Check permissions or choose an image file."
+      },
+      zh: {
+        title: "济州植物探索图鉴",
+        subtitle: "探索、发现并完成你的植物图鉴！",
+        heroTitle: "准备开始植物探索了吗？",
+        heroDescription: "在地图上寻找植物。到达附近并拍照即可收集。",
+        dex: "植物图鉴",
+        progress: "收集进度",
+        nearby: "🌱 探索植物列表",
+        locate: "我的位置",
+        hint: "📍 使用 GPS 查看当前位置。点击地图标记查看植物信息。",
+        footerTitle: "济州植物探索项目",
+        footerDescription: "本程序由济州大学师范大学附属高中一年级学生作为自然探索项目制作。",
+        collected: "已收集",
+        notCollected: "未收集",
+        distribution: "主要分布地",
+        family: "科名",
+        feature: "特征与介绍",
+        locked: "尚未收集。",
+        camera: "📷 拍摄植物",
+        cameraInstruction: "拍摄植物照片或选择图片文件。",
+        cameraNotice: "拍照后请自行确认是否为正确的植物。",
+        startCamera: "打开相机",
+        takePhoto: "拍照",
+        confirm: "是的，收集！",
+        retake: "重新拍摄",
+        confirmQuestion: "照片中的植物正确吗？",
+        noGps: "无法获取位置。请检查位置权限。",
+        gpsLoading: "正在获取当前位置……",
+        gpsSuccess: "已在地图上显示您的位置。",
+        tooFar: "距离植物位置仍较远，请再靠近一些。",
+        already: "这株植物已经收集过了！",
+        success: "🎉 植物收集成功！",
+        permission: "请允许使用相机，或选择图片文件。",
+        photoFirst: "请先拍摄或选择照片。",
+        noPlants: "尚未登记植物。",
+        distance: "与当前位置的距离",
+        meters: "米",
+        kilometers: "公里",
+        openDex: "打开图鉴",
+        allCollected: "所有植物都已收集！恭喜！",
+        gpsButton: "📍 我的位置",
+        plant: "植物",
+        unknown: "?",
+        cameraError: "无法打开相机。请检查权限或选择图片文件。"
+      },
+      ja: {
+        title: "済州植物探検図鑑",
+        subtitle: "探検して発見し、自分だけの図鑑を完成させよう！",
+        heroTitle: "植物探検を始めましょう！",
+        heroDescription: "地図で植物の位置を確認し、近くで写真を撮ると収集できます。",
+        dex: "植物図鑑",
+        progress: "収集の進行状況",
+        nearby: "🌱 探検する植物",
+        locate: "現在地",
+        hint: "📍 GPSで現在地を確認できます。マーカーを押すと植物情報が表示されます。",
+        footerTitle: "済州植物探検プロジェクト",
+        footerDescription: "済州大学校師範大学附属高等学校1年生が自然探検プロジェクトとして制作したプログラムです。",
+        collected: "収集済み",
+        notCollected: "未収集",
+        distribution: "主な分布地",
+        family: "科名",
+        feature: "特徴と紹介",
+        locked: "まだ収集していません。",
+        camera: "📷 植物を撮影",
+        cameraInstruction: "植物を撮影するか、画像ファイルを選択してください。",
+        cameraNotice: "撮影後、正しい植物かどうか自分で確認してください。",
+        startCamera: "カメラを開く",
+        takePhoto: "撮影する",
+        confirm: "はい、収集する！",
+        retake: "撮り直す",
+        confirmQuestion: "写真の植物は正しいですか？",
+        noGps: "位置情報を取得できません。位置情報の権限を確認してください。",
+        gpsLoading: "現在地を確認しています……",
+        gpsSuccess: "現在地を地図に表示しました。",
+        tooFar: "植物の位置からまだ遠いです。もう少し近づいてください。",
+        already: "この植物はすでに収集済みです！",
+        success: "🎉 植物を収集！",
+        permission: "カメラの使用を許可するか、画像ファイルを選択してください。",
+        photoFirst: "先に写真を撮影または選択してください。",
+        noPlants: "植物が登録されていません。",
+        distance: "現在地からの距離",
+        meters: "m",
+        kilometers: "km",
+        openDex: "図鑑を開く",
+        allCollected: "すべての植物を収集しました！おめでとう！",
+        gpsButton: "📍 現在地",
+        plant: "植物",
+        unknown: "?",
+        cameraError: "カメラを開けません。権限を確認するか画像を選択してください。"
+      }
+    };
+
+    let language = "ko";
+    let userPosition = null;
+    let activePlant = null;
+    let photoData = null;
+    let cameraStream = null;
+    let userMarker = null;
+    let accuracyCircle = null;
+
+    let collected = new Set();
+
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      collected = new Set(saved);
+    } catch (error) {
+      collected = new Set();
+    }
+
+    const $ = (id) => document.getElementById(id);
+    const t = (key) => words[language][key] || words.ko[key] || key;
+
+    /* =========================================================
+       3. 지도 생성 및 식물 마커
+       ========================================================= */
+
+    const validPlants = plants.filter(p =>
+      Number.isFinite(p.lat) &&
+      Number.isFinite(p.lng) &&
+      p.lat !== 0 &&
+      p.lng !== 0
+    );
+
+    const initialCenter = validPlants.length
+      ? [validPlants[0].lat, validPlants[0].lng]
+      : [33.4996, 126.5312];
+
+    const map = L.map("map").setView(initialCenter, 16);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    const plantMarkers = new Map();
+
+    function plantText(plant, field) {
+      return plant[language]?.[field] ||
+        plant.ko?.[field] ||
+        "?";
+    }
+
+    function createPlantIcon(isCollected) {
+      return L.divIcon({
+        className: "",
+        html: `<div style="
+          width:38px;height:38px;border-radius:50%;
+          background:${isCollected ? "#d8f3df" : "#fff8d9"};
+          border:3px solid ${isCollected ? "#247653" : "#d6a72c"};
+          display:flex;align-items:center;justify-content:center;
+          font-size:21px;box-shadow:0 3px 8px #0003;">
+          ${isCollected ? "🌿" : "🌱"}
+        </div>`,
+        iconSize: [38, 38],
+        iconAnchor: [19, 19]
+      });
+    }
+
+    function addPlantMarkers() {
+      plants.forEach(plant => {
+        if (!Number.isFinite(plant.lat) || !Number.isFinite(plant.lng) ||
+            plant.lat === 0 || plant.lng === 0) return;
+
+        const marker = L.marker([plant.lat, plant.lng], {
+          icon: createPlantIcon(collected.has(plant.id))
+        }).addTo(map);
+
+        marker.bindTooltip(plantText(plant, "name"), {
+          direction: "top"
+        });
+
+        marker.on("click", () => showPlantDetail(plant.id));
+        plantMarkers.set(plant.id, marker);
+      });
+    }
+
+    addPlantMarkers();
+
+    /* =========================================================
+       4. 거리 및 GPS
+       ========================================================= */
+
+    function distanceMeters(lat1, lng1, lat2, lng2) {
+      const R = 6371000;
+      const toRad = value => value * Math.PI / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLng = toRad(lng2 - lng1);
+
+      const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(lat1)) *
+        Math.cos(toRad(lat2)) *
+        Math.sin(dLng / 2) ** 2;
+
+      return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function formatDistance(distance) {
+      if (distance >= 1000) {
+        return (distance / 1000).toFixed(2) + " " + t("kilometers");
+      }
+      return Math.round(distance) + " " + t("meters");
+    }
+
+    function getDistanceToPlant(plant) {
+      if (!userPosition) return null;
+      return distanceMeters(
+        userPosition.lat,
+        userPosition.lng,
+        plant.lat,
+        plant.lng
+      );
+    }
+
+    function locateUser() {
+      if (!navigator.geolocation) {
+        alert(t("noGps"));
+        return;
+      }
+
+      $("mapHint").textContent = t("gpsLoading");
+
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          userPosition = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            accuracy: position.coords.accuracy
+          };
+
+          if (userMarker) map.removeLayer(userMarker);
+          if (accuracyCircle) map.removeLayer(accuracyCircle);
+
+          userMarker = L.marker(
+            [userPosition.lat, userPosition.lng],
+            {
+              icon: L.divIcon({
+                className: "",
+                html: `<div style="
+                  width:22px;height:22px;border-radius:50%;
+                  background:#2878ff;border:4px solid white;
+                  box-shadow:0 0 0 3px #2878ff66;"></div>`,
+                iconSize: [22, 22],
+                iconAnchor: [11, 11]
+              })
+            }
+          ).addTo(map).bindTooltip(
+            language === "ko" ? "내 위치" :
+            language === "en" ? "My location" :
+            language === "zh" ? "我的位置" : "現在地"
+          );
+
+          accuracyCircle = L.circle(
+            [userPosition.lat, userPosition.lng],
+            {
+              radius: userPosition.accuracy,
+              color: "#2878ff",
+              fillColor: "#2878ff",
+              fillOpacity: 0.08,
+              weight: 1
+            }
+          ).addTo(map);
+
+          map.setView([userPosition.lat, userPosition.lng], 18);
+          $("mapHint").textContent = t("gpsSuccess");
+          renderPlantCards();
+        },
+        error => {
+          console.error(error);
+          $("mapHint").textContent = t("noGps");
+          alert(t("noGps"));
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 5000
+        }
+      );
+    }
+
+    /* =========================================================
+       5. 식물 카드 및 도감
+       ========================================================= */
+
+    function renderPlantCards() {
+      const list = $("plantList");
+      list.innerHTML = "";
+
+      if (!plants.length) {
+        list.innerHTML = `<div class="empty-state">${t("noPlants")}</div>`;
+        return;
+      }
+
+      plants.forEach(plant => {
+        const isCollected = collected.has(plant.id);
+        const name = plantText(plant, "name");
+        const distance = getDistanceToPlant(plant);
+
+        const card = document.createElement("article");
+        card.className = "plant-card";
+
+        const img = document.createElement("img");
+        img.src = plant.image;
+        img.alt = name;
+        img.onerror = () => {
+          img.style.display = "none";
+        };
+
+        const body = document.createElement("div");
+        body.className = "plant-card-body";
+
+        const title = document.createElement("h3");
+        title.textContent = name;
+
+        const scientific = document.createElement("p");
+        scientific.textContent = isCollected
+          ? plantText(plant, "scientific")
+          : t("locked");
+
+        const status = document.createElement("span");
+        status.className = "status" + (isCollected ? " collected" : "");
+        status.textContent = isCollected ? t("collected") : t("notCollected");
+
+        body.append(title, scientific, status);
+
+        if (distance !== null) {
+          const distanceText = document.createElement("p");
+          distanceText.className = "distance";
+          distanceText.textContent = t("distance") + ": " + formatDistance(distance);
+          body.appendChild(distanceText);
+        }
+
+        card.append(img, body);
+        card.addEventListener("click", () => showPlantDetail(plant.id));
+        list.appendChild(card);
+      });
+    }
+
+    function renderDex() {
+      const list = $("dexList");
+      list.innerHTML = "";
+
+      plants.forEach(plant => {
+        const isCollected = collected.has(plant.id);
+        const card = document.createElement("article");
+        card.className = "plant-card";
+
+        const img = document.createElement("img");
+        img.src = plant.image;
+        img.alt = isCollected ? plantText(plant, "name") : "Plant";
+        img.onerror = () => {
+          img.style.display = "none";
+        };
+
+        const body = document.createElement("div");
+        body.className = "plant-card-body";
+
+        const name = document.createElement("h3");
+        name.textContent = plantText(plant, "name");
+
+        const status = document.createElement("span");
+        status.className = "status" + (isCollected ? " collected" : "");
+        status.textContent = isCollected ? t("collected") : t("notCollected");
+
+        body.append(name, status);
+        card.append(img, body);
+        card.addEventListener("click", () => showPlantDetail(plant.id));
+        list.appendChild(card);
+      });
+    }
+
+    function updateProgress() {
+      const total = plants.length;
+      const count = plants.filter(p => collected.has(p.id)).length;
+      const percentage = total ? count / total * 100 : 0;
+
+      $("progressCount").textContent = `${count} / ${total}`;
+      $("progressFill").style.width = percentage + "%";
+
+      $("dexProgressCount").textContent = `${count} / ${total}`;
+      $("dexProgressFill").style.width = percentage + "%";
+
+      if (total && count === total) {
+        $("heroTitle").textContent = t("allCollected");
+      } else {
+        $("heroTitle").textContent = t("heroTitle");
+      }
+    }
+
+    function showPlantDetail(id) {
+      const plant = plants.find(p => p.id === id);
+      if (!plant) return;
+
+      activePlant = plant;
+      const isCollected = collected.has(id);
+
+      const content = $("detailContent");
+      content.innerHTML = "";
+
+      const img = document.createElement("img");
+      img.className = "detail-photo";
+      img.src = plant.image;
+      img.alt = plantText(plant, "name");
+      img.onerror = () => {
+        img.style.display = "none";
+      };
+
+      const name = document.createElement("h2");
+      name.className = "detail-name";
+      name.textContent = plantText(plant, "name");
+
+      const scientific = document.createElement("div");
+      scientific.className = "detail-scientific";
+      scientific.textContent = isCollected
+        ? plantText(plant, "scientific")
+        : "?";
+
+      content.append(img, name, scientific);
+
+      const fields = [
+        ["distribution", t("distribution")],
+        ["family", t("family")],
+        ["feature", t("feature")]
+      ];
+
+      fields.forEach(([key, label]) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "detail-field";
+
+        const heading = document.createElement("strong");
+        heading.textContent = label;
+
+        const paragraph = document.createElement("p");
+        paragraph.textContent = isCollected
+          ? plantText(plant, key)
+          : "?";
+
+        if (!isCollected) paragraph.className = "unknown";
+
+        wrapper.append(heading, paragraph);
+        content.appendChild(wrapper);
+      });
+
+      if (!isCollected) {
+        const distance = getDistanceToPlant(plant);
+
+        const button = document.createElement("button");
+        button.className = "btn btn-primary";
+        button.style.width = "100%";
+        button.style.marginTop = "16px";
+        button.textContent = t("camera");
+        button.addEventListener("click", () => openCamera(plant.id));
+        content.appendChild(button);
+
+        const note = document.createElement("div");
+        note.className = "notice";
+        note.textContent = distance === null
+          ? t("gpsLoading")
+          : `${t("distance")}: ${formatDistance(distance)}`;
+        content.appendChild(note);
+      } else {
+        const status = document.createElement("div");
+        status.className = "notice";
+        status.textContent = "🌿 " + t("collected");
+        content.appendChild(status);
+      }
+
+      $("detailModal").classList.add("show");
+    }
+
+    /* =========================================================
+       6. 카메라 및 사진 선택
+       ========================================================= */
+
+    async function openCamera(id) {
+      const plant = plants.find(p => p.id === id);
+      if (!plant) return;
+
+      if (collected.has(id)) {
+        alert(t("already"));
+        return;
+      }
+
+      activePlant = plant;
+      photoData = null;
+      $("photoPreview").style.display = "none";
+      $("cameraVideo").style.display = "none";
+      $("cameraCanvas").style.display = "none";
+      $("confirmArea").style.display = "none";
+      $("takePhotoBtn").style.display = "none";
+      $("photoInput").value = "";
+
+      $("cameraTitle").textContent = t("camera") + " - " + plantText(plant, "name");
+      $("cameraInstruction").textContent = t("cameraInstruction");
+      $("cameraNotice").textContent = t("cameraNotice");
+      $("startCameraBtn").textContent = t("startCamera");
+      $("takePhotoBtn").textContent = t("takePhoto");
+      $("confirmCollectBtn").textContent = t("confirm");
+      $("retakeBtn").textContent = t("retake");
+      $("confirmQuestion").textContent = t("confirmQuestion");
+
+      $("detailModal").classList.remove("show");
+      $("cameraModal").classList.add("show");
+    }
+
+    async function startCamera() {
+      stopCamera();
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert(t("permission"));
+        return;
+      }
+
+      try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: { facingMode: { ideal: "environment" } }
+        });
+
+        const video = $("cameraVideo");
+        video.srcObject = cameraStream;
+        video.style.display = "block";
+        $("photoPreview").style.display = "none";
+        $("takePhotoBtn").style.display = "inline-block";
+        $("confirmArea").style.display = "none";
+
+        await video.play();
+      } catch (error) {
+        console.error(error);
+        alert(t("cameraError"));
+      }
+    }
+
+    function takePhoto() {
+      const video = $("cameraVideo");
+      const canvas = $("cameraCanvas");
+
+      if (!video.videoWidth || !video.videoHeight) {
+        alert(t("photoFirst"));
+        return;
+      }
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      const context = canvas.getContext("2d");
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      photoData = canvas.toDataURL("image/jpeg", 0.85);
+      showPhotoPreview(photoData);
+      stopCamera();
+    }
+
+    function showPhotoPreview(dataUrl) {
+      photoData = dataUrl;
+      $("photoPreview").src = dataUrl;
+      $("photoPreview").style.display = "block";
+      $("cameraVideo").style.display = "none";
+      $("takePhotoBtn").style.display = "none";
+      $("confirmArea").style.display = "block";
+    }
+
+    function stopCamera() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+      $("cameraVideo").srcObject = null;
+    }
+
+    $("photoInput").addEventListener("change", event => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        alert(t("photoFirst"));
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => showPhotoPreview(reader.result);
+      reader.readAsDataURL(file);
+      stopCamera();
+    });
+
+    /* =========================================================
+       7. 수집 처리
+       ========================================================= */
+
+    function confirmCollection() {
+      if (!activePlant || !photoData) {
+        alert(t("photoFirst"));
+        return;
+      }
+
+      if (collected.has(activePlant.id)) {
+        alert(t("already"));
+        return;
+      }
+
+      if (!userPosition) {
+        alert(t("noGps"));
+        return;
+      }
+
+      const distance = getDistanceToPlant(activePlant);
+
+      if (distance === null || distance > COLLECTION_RADIUS_METERS) {
+        alert(t("tooFar"));
+        return;
+      }
+
+      const plant = activePlant;
+
+      collected.add(plant.id);
+
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([...collected]));
+      } catch (error) {
+        console.warn("Could not save collection progress.", error);
+      }
+
+      const marker = plantMarkers.get(plant.id);
+      if (marker) marker.setIcon(createPlantIcon(true));
+
+      stopCamera();
+      $("cameraModal").classList.remove("show");
+
+      renderPlantCards();
+      renderDex();
+      updateProgress();
+
+      $("toastPlantName").textContent = plantText(plant, "name");
+      $("collectionToast").classList.add("show");
+
+      window.setTimeout(() => {
+        $("collectionToast").classList.remove("show");
+        showPlantDetail(plant.id);
+      }, 1400);
+    }
+
+    /* =========================================================
+       8. 언어 전환
+       ========================================================= */
+
+    function applyLanguage() {
+      document.documentElement.lang = language;
+
+      $("appTitle").textContent = t("title");
+      $("appSubtitle").textContent = t("subtitle");
+      $("dexButtonText").textContent = t("dex");
+      $("heroTitle").textContent = t("heroTitle");
+      $("heroDescription").textContent = t("heroDescription");
+      $("progressText").textContent = t("progress");
+      $("nearbyTitle").textContent = t("nearby");
+      $("locateText").textContent = t("locate");
+      $("mapHint").textContent = t("hint");
+      $("footerTitle").textContent = t("footerTitle");
+      $("footerDescription").textContent = t("footerDescription");
+      $("dexModalTitle").textContent = "📖 " + t("dex");
+      $("dexProgressText").textContent = t("progress");
+
+      renderPlantCards();
+      renderDex();
+      updateProgress();
+
+      if (activePlant && $("detailModal").classList.contains("show")) {
+        showPlantDetail(activePlant.id);
+      }
+    }
+
+    $("languageSelect").addEventListener("change", event => {
+      language = event.target.value;
+      applyLanguage();
+    });
+
+    /* =========================================================
+       9. 버튼 이벤트
+       ========================================================= */
+
+    $("openDexBtn").addEventListener("click", () => {
+      renderDex();
+      $("dexModal").classList.add("show");
+    });
+
+    $("locateBtn").addEventListener("click", locateUser);
+    $("startCameraBtn").addEventListener("click", startCamera);
+    $("takePhotoBtn").addEventListener("click", takePhoto);
+    $("confirmCollectBtn").addEventListener("click", confirmCollection);
+    $("retakeBtn").addEventListener("click", startCamera);
+
+    document.querySelectorAll("[data-close]").forEach(button => {
+      button.addEventListener("click", () => {
+        const modalId = button.dataset.close;
+        $(modalId).classList.remove("show");
+
+        if (modalId === "cameraModal") stopCamera();
+      });
+    });
+
+    document.querySelectorAll(".modal").forEach(modal => {
+      modal.addEventListener("click", event => {
+        if (event.target === modal) {
+          modal.classList.remove("show");
+          if (modal.id === "cameraModal") stopCamera();
+        }
+      });
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        document.querySelectorAll(".modal.show").forEach(modal => {
+          modal.classList.remove("show");
+          if (modal.id === "cameraModal") stopCamera();
+        });
+      }
+    });
+
+    /* =========================================================
+       10. 최초 실행
+       ========================================================= */
+
+    $("languageSelect").value = language;
+    applyLanguage();
+    renderPlantCards();
+    renderDex();
+    updateProgress();
+  </script>
+</body>
+</html>
