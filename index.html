@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -550,7 +549,6 @@
     </span>
   </footer>
 
-  <!-- 식물 도감 모달 -->
   <div class="modal" id="dexModal" role="dialog" aria-modal="true">
     <div class="modal-box">
       <div class="modal-header">
@@ -571,7 +569,6 @@
     </div>
   </div>
 
-  <!-- 식물 상세 정보 모달 -->
   <div class="modal" id="detailModal" role="dialog" aria-modal="true">
     <div class="modal-box">
       <div class="modal-header">
@@ -582,7 +579,6 @@
     </div>
   </div>
 
-  <!-- 사진 촬영 및 확인 모달 -->
   <div class="modal" id="cameraModal" role="dialog" aria-modal="true">
     <div class="modal-box">
       <div class="modal-header">
@@ -627,19 +623,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    /* =========================================================
-       1. 식물 자료 입력 영역
-       ---------------------------------------------------------
-       아래 EXAMPLE 항목을 실제 식물 17종 자료로 교체하세요.
-
-       image: "images/plant01.jpg"처럼 저장한 사진 경로
-       lat / lng: 식물의 위도와 경도
-       ko / en / zh / ja: 언어별 표시 내용
-
-       아직 조사하지 않은 번역은 한국어 내용을 임시로 넣어도
-       프로그램이 작동합니다.
-       ========================================================= */
-
     const plants = [
       {
         id: 1,
@@ -681,28 +664,28 @@
         lat: 33.51566592458757,
         lng: 126.51121692898431,
         ko: { name: "멀구슬나무",
-          			scientific: "Melia azedarach",
-              distribution: "(국내)제주도,전라남도,경상남도 등, (국외)중국,일본,대만,인도,네팔 등",
-              family: "멀구슬나무과",
-              feature: " 낙엽이 지는 활엽교목이다. 멀구슬나무의 열매는 천련자라고 하는데, 천련자는 염주를 만들 떄 사용한다. 구주목이라고 불리기도 한다."
-   	  	},
+          scientific: "Melia azedarach",
+          distribution: "(국내)제주도,전라남도,경상남도 등, (국외)중국,일본,대만,인도,네팔 등",
+          family: "멀구슬나무과",
+          feature: " 낙엽이 지는 활엽교목이다. 멀구슬나무의 열매는 천련자라고 하는데, 천련자는 염주를 만들 떄 사용한다. 구주목이라고 불리기도 한다."
+        },
         en: { name: "Chinaberry",
-              scientific: "Melia azedarach",
-              distribution: "Jeju-do, Jeollanam-do, Gyeongsangnam-do, etc. in Korea; also China, Japan, Taiwan, India, Nepal, etc.",
-              family: "Meliaceae",
-              feature: "The Chinaberry is a deciduous broad-leaved tree. Its fruit is known as chinaberry fruit and is sometimes called cheonryeonja. The fruit is used in traditional medicine and is also known as guzumok."
+          scientific: "Melia azedarach",
+          distribution: "Jeju-do, Jeollanam-do, Gyeongsangnam-do, etc. in Korea; also China, Japan, Taiwan, India, Nepal, etc.",
+          family: "Meliaceae",
+          feature: "The Chinaberry is a deciduous broad-leaved tree. Its fruit is known as chinaberry fruit and is sometimes called cheonryeonja. The fruit is used in traditional medicine and is also known as guzumok."
         },
         zh: { name: "苦楝",
-              scientific: "Melia azedarach",
-              distribution: "韩国的济州道、全罗南道、庆尚南道等地区，以及中国、日本、台湾、印度、尼泊尔等地",
-              family: "楝科",
-              feature: "苦楝是一种落叶阔叶乔木。苦楝的果实被称为“川楝子”，有时也被称为“苦楝子”。其果实可用于传统药材。"
+          scientific: "Melia azedarach",
+          distribution: "韩国的济州道、全罗南道、庆尚南道等地区，以及中国、日本、台湾、印度、尼泊尔等地",
+          family: "楝科",
+          feature: "苦楝是一种落叶阔叶乔木。苦楝的果实被称为“川楝子”，有时也被称为“苦楝子”。其果实可用于传统药材。"
         },
         ja: { name: "センダン",
-              scientific: "Melia azedarach",
-              distribution: "韓国の済州道、全羅南道、慶尚南道など。また、中国、日本、台湾、インド、ネパールなどにも分布しています。",
-              family: "センダン科",
-              feature: "センダンは落葉広葉樹です。センダンの果実は「川楝子（せんれんし）」と呼ばれ、薬用として利用されることがあります。"
+          scientific: "Melia azedarach",
+          distribution: "韓国の済州道、全羅南道、慶尚南道など。また、中国、日本、台湾、インド、ネパールなどにも分布しています。",
+          family: "センダン科",
+          feature: "センダンは落葉広葉樹です。センダンの果実は「川楝子（せんれんし）」と呼ばれ、薬用として利用されることがあります。"
         }
       },
       {
@@ -711,16 +694,16 @@
         lat: 33.51570557265346,
         lng: 126.51212621682485,
         ko: { name: "회양목",
-          			scientific: "Buxus microphylla var.koreana",
-              distribution: "(국내)평안북도,함경북도를 제외한 전국의 숲, (국외)중국,일본 남부",
-              family: "회양목과",
-              feature: "대한민국의 어디에나 자생하고, 주로 관공서나 학교에 많이 심어져있다. 조경수로 쓰이는 회양목과 다르게 야생 회양목은 5~6m의 크기로 자라며, 평균 높이까지 자라려면 200년이 걸린다고 한다."
+          scientific: "Buxus microphylla var.koreana",
+          distribution: "(국내)평안북도,함경북도를 제외한 전국의 숲, (국외)중국,일본 남부",
+          family: "회양목과",
+          feature: "대한민국의 어디에나 자생하고, 주로 관공서나 학교에 많이 심어져있다. 조경수로 쓰이는 회양목과 다르게 야생 회양목은 5~6m의 크기로 자라며, 평균 높이까지 자라려면 200년이 걸린다고 한다."
         },
         en: { name: "Korean boxwood",
-              scientific: "Buxus microphylla var. koreana",
-              distribution: "Korea: Forests throughout the country except Pyonganbuk-do and Hamgyeongbuk-do, Other countries: China and southern Japan",
-              family: "Buxaceae",
-              feature: "Korean boxwood is widely planted around public offices and schools in Korea. Unlike cultivated boxwood, which is commonly used as a landscaping plant, wild Korean boxwood can grow to a height of 5–6 meters. It is said to take about 200 years to reach its average mature height."
+          scientific: "Buxus microphylla var. koreana",
+          distribution: "Korea: Forests throughout the country except Pyonganbuk-do and Hamgyeongbuk-do, Other countries: China and southern Japan",
+          family: "Buxaceae",
+          feature: "Korean boxwood is widely planted around public offices and schools in Korea. Unlike cultivated boxwood, which is commonly used as a landscaping plant, wild Korean boxwood can grow to a height of 5–6 meters. It is said to take about 200 years to reach its average mature height."
         },
         zh: { name: "植物 3", scientific: "Scientific name 3", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
         ja: { name: "植物 3", scientific: "Scientific name 3", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
@@ -731,16 +714,16 @@
         lat: 33.51580642684963,
         lng: 126.51198034408098,
         ko: { name: "다정큼나무",
-          		scientific: "Rhaphiolepis indica var.umbellata",
-              distribution: "(국내)경남 및 전남 이남의 산야, (국외)대만,라오스,일본,중국,캄보디아 등",
-              family: "장미과",
-              feature: "학명이 ‘Rhaphiolepis indica var. umbellata’인데, 바늘을 뜻하는 Rhaphiolepis와 우산을 뜻하는 umbellata가 합쳐진 말이다. 연분홍색의 꽃이 개화하는데, 꽃말은 친밀이라고 한다."
+          scientific: "Rhaphiolepis indica var.umbellata",
+          distribution: "(국내)경남 및 전남 이남의 산야, (국외)대만,라오스,일본,중국,캄보디아 등",
+          family: "장미과",
+          feature: "학명이 ‘Rhaphiolepis indica var. umbellata’인데, 바늘을 뜻하는 Rhaphiolepis와 우산을 뜻하는 umbellata가 합쳐진 말이다. 연분홍색의 꽃이 개화하는데, 꽃말은 친밀이라고 한다."
         },
         en: { name: "Manzanita",
-              scientific: "Rhaphiolepis indica var.umbellata",
-              distribution: "Korea: Mountainous and rural areas south of Gyeongsangnam-do and Jeollanam-do, Other countries: Taiwan, Laos, Japan, China, Cambodia, etc.",
-              family: "Rosaceae",
-              feature: "The scientific name is Rhaphiolepis indica var. umbellata. The name combines Rhaphiolepis, meaning “needle,” and umbellata, meaning “umbrella.” It produces pale pink flowers. The language of flowers is intimacy."
+          scientific: "Rhaphiolepis indica var.umbellata",
+          distribution: "Korea: Mountainous and rural areas south of Gyeongsangnam-do and Jeollanam-do, Other countries: Taiwan, Laos, Japan, China, Cambodia, etc.",
+          family: "Rosaceae",
+          feature: "The scientific name is Rhaphiolepis indica var. umbellata. The name combines Rhaphiolepis, meaning “needle,” and umbellata, meaning “umbrella.” It produces pale pink flowers. The language of flowers is intimacy."
         },
         zh: { name: "植物 4", scientific: "Rhaphiolepis indica var.umbellata", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
         ja: { name: "植物 4", scientific: "Rhaphiolepis indica var.umbellata", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
@@ -751,16 +734,16 @@
         lat: 33.51567977936787,
         lng: 126.51072980550738,
         ko: { name: "까마귀쪽나무",
-          			scientific: "Litsea japonica",
-              distribution: "(국내)전라남도와 경상남도 섬 지역,제주도,울릉도,(국외)일본",
-              family: "녹나무과",
-              feature: "제주말로는 구럼비라고 불린다. 까마귀가 이 나무의 열매를 먹을 때 쪽 하는 소리가 난다고 해서 까마귀쪽나무라고 불린다. 꽃말은 인내와 평안이다."
+          scientific: "Litsea japonica",
+          distribution: "(국내)전라남도와 경상남도 섬 지역,제주도,울릉도,(국외)일본",
+          family: "녹나무과",
+          feature: "제주말로는 구럼비라고 불린다. 까마귀가 이 나무의 열매를 먹을 때 쪽 하는 소리가 난다고 해서 까마귀쪽나무라고 불린다. 꽃말은 인내와 평안이다."
         },
         en: { name: "Japanese bay tree",
-              scientific: "Litsea japonica",
-              distribution: "Korea: Coastal islands and areas of Jeollanam-do and Gyeongsangnam-do, as well as Jeju-do and Ulleungdo, Other countries: Japan",
-              family: "Lauraceae",
-              feature: "It is called Gulpinamu in the Jeju dialect. It is said to have been named “Kkamagwi-jjoknamu” because crows make a “jjok” sound when eating its fruits. The language of flowers is perseverance and peace."
+          scientific: "Litsea japonica",
+          distribution: "Korea: Coastal islands and areas of Jeollanam-do and Gyeongsangnam-do, as well as Jeju-do and Ulleungdo, Other countries: Japan",
+          family: "Lauraceae",
+          feature: "It is called Gulpinamu in the Jeju dialect. It is said to have been named “Kkamagwi-jjoknamu” because crows make a “jjok” sound when eating its fruits. The language of flowers is perseverance and peace."
         },
         zh: { name: "植物 5", scientific: "Scientific name 5", distribution: "分布地区", family: "科名", feature: "特征与介绍" },
         ja: { name: "植物 5", scientific: "Scientific name 5", distribution: "分布地", family: "科名", feature: "特徴と紹介" }
@@ -771,10 +754,10 @@
         lat: 33.51598244486431,
         lng: 126.51203317314068,
         ko: { name: "모새달",
-          			scientific: "Phacelurus latifolius",
-              distribution: "한국,일본,중국",
-              family: "벼과",
-              feature: "모새달은 고운 모래라는 의미의 모새와 생김새가 닮은 달뿌리풀의 달이 합쳐진 단어이다. 해안 개발로 자생지가 많이 파괴되어 산림청에서 희귀식물로 국가보호종에 지정, 관리하고 있다."
+          scientific: "Phacelurus latifolius",
+          distribution: "한국,일본,중국",
+          family: "벼과",
+          feature: "모새달은 고운 모래라는 의미의 모새와 생김새가 닮은 달뿌리풀의 달이 합쳐진 단어이다. 해안 개발로 자생지가 많이 파괴되어 산림청에서 희귀식물로 국가보호종에 지정, 관리하고 있다."
         },
         en: { name: "Mosaedal grass", scientific: "Phacelurus latifolius", distribution: "Korea, Japan, and China", family: "Poaceae", feature: "The Korean name combines “mosae,” meaning fine sand, with “dal,” from dalppuripul, a grass with a similar appearance. Because coastal development has destroyed many of its natural habitats, it has been designated and managed as a nationally protected rare plant by the Korea Forest Service." },
         zh: { name: "宽叶毛竹草", scientific: "Phacelurus latifolius", distribution: "韩国、日本和中国", family: "禾本科", feature: "韩语名称由意为“细沙”的“mosae”和取自外形相似的植物“dalppuripul”的“dal”组合而成。由于沿海开发破坏了许多自然生境，韩国山林厅已将其列为国家保护的珍稀植物并加以管理。" },
@@ -786,10 +769,10 @@
         lat: 33.51561930601335,
         lng: 126.5108270167968,
         ko: { name: "분꽃",
-          			scientific: "Mirabilis jalapa",
-              distribution: "(국내)중부이남,제주도, (국외)남아마리카",
-              family: "분꽃과",
-              feature: "분꽃은 남아메리카 원산의 여러해살이풀로, 한국에서는 주로 한해살이처럼 자라며 6월부터 10월까지 저녁부터 아침까지 향기로운 꽃을 피운다. 꽃은 흰색·노란색·분홍색·빨간색 또는 여러 색이 섞인다."
+          scientific: "Mirabilis jalapa",
+          distribution: "(국내)중부이남,제주도, (국외)남아마리카",
+          family: "분꽃과",
+          feature: "분꽃은 남아메리카 원산의 여러해살이풀로, 한국에서는 주로 한해살이처럼 자라며 6월부터 10월까지 저녁부터 아침까지 향기로운 꽃을 피운다. 꽃은 흰색·노란색·분홍색·빨간색 또는 여러 색이 섞인다."
         },
         en: { name: "Four o’clock flower", scientific: "Mirabilis jalapa", distribution: "South-central Korea and Jeju Island; native to South America", family: "Nyctaginaceae", feature: "The four o’clock flower is a perennial native to South America, although in Korea it usually grows like an annual. From June to October, it produces fragrant flowers that open from evening until morning. The flowers may be white, yellow, pink, red, or a mixture of colors." },
         zh: { name: "紫茉莉", scientific: "Mirabilis jalapa", distribution: "韩国中南部及济州岛；原产于南美洲", family: "紫茉莉科", feature: "紫茉莉原产于南美洲，是多年生草本植物，但在韩国通常表现为一年生植物。它从6月到10月开花，花朵芳香，傍晚开放、清晨闭合。花色有白色、黄色、粉色、红色，也有多种颜色混合的品种。" },
@@ -801,10 +784,10 @@
         lat: 33.515659292122706,
         lng: 126.51067879451752,
         ko: { name: "돈나무",
-          			scientific: "Pittosporum tobira",
-              distribution: "(국내)전라남도,전라북도,경상남도, (국외)일본,중국,대만",
-              family: "돈나무과",
-              feature: "바닷가의 산기슭에서 자란다. 가지에 털이 없으며 수피는 검은갈색이다. 줄기 밑둥에서 여러 갈래로 갈라져 모여나고 수관은 반원형이다. 뿌리는 껍질에서 냄새가 난다. 높이는 2∼3m이다. 잎은 어긋나지만 가지 끝에 모여 달리며 두껍다. "
+          scientific: "Pittosporum tobira",
+          distribution: "(국내)전라남도,전라북도,경상남도, (국외)일본,중국,대만",
+          family: "돈나무과",
+          feature: "바닷가의 산기슭에서 자란다. 가지에 털이 없으며 수피는 검은갈색이다. 줄기 밑둥에서 여러 갈래로 갈라져 모여나고 수관은 반원형이다. 뿌리는 껍질에서 냄새가 난다. 높이는 2∼3m이다. 잎은 어긋나지만 가지 끝에 모여 달리며 두껍다."
         },
         en: { name: "Japanese mock orange", scientific: "Pittosporum tobira", distribution: "Jeollanam-do, Jeollabuk-do, and Gyeongsangnam-do in Korea; Japan, China, and Taiwan", family: "Pittosporaceae", feature: "It grows on hillsides near the sea. Its branches are hairless, and its bark is dark brown. Several stems emerge from the base, forming a semicircular crown. The root bark has a distinctive smell. It grows about 2–3 meters tall. Its thick leaves are alternate but clustered near the ends of branches." },
         zh: { name: "海桐", scientific: "Pittosporum tobira", distribution: "韩国全罗南道、全罗北道和庆尚南道；日本、中国和台湾", family: "海桐花科", feature: "海桐生长在海边的山麓。枝条无毛，树皮呈深褐色。茎从基部向多处分枝，树冠呈半圆形。根部的树皮带有气味。植株高约2至3米。叶片较厚，互生，但集中生长在枝条顶端。" },
@@ -816,10 +799,10 @@
         lat: 33.51563697608866,
         lng: 126.51073542817232,
         ko: { name: "송악",
-          			scientific: "Hedera rhombea",
-              distribution: "(국내)인천특별시,충청남도,경상남도,울릉도,전라북도,전라남도,제주도, (국외)대만, 일본 혼슈 이남",
-              family: "두릅나무과",
-              feature: "길이 10m 이상 자란다. 덩굴나무로 원줄기에서 공기뿌리[기근: 식물의 땅위줄기 및 땅속에 있는 뿌리에서 나와 공기 가운데 노출되어 있는 뿌리]가 나와 다른 물체를 타고 올라간다. 어린가지와 잎, 꽃에 털이 있으나 자라면서 없어진다. 잎은 어긋나고 윤기가 나는 녹색이며 가장자리는 밋밋하다."
+          scientific: "Hedera rhombea",
+          distribution: "(국내)인천특별시,충청남도,경상남도,울릉도,전라북도,전라남도,제주도, (국외)대만, 일본 혼슈 이남",
+          family: "두릅나무과",
+          feature: "길이 10m 이상 자란다. 덩굴나무로 원줄기에서 공기뿌리[기근: 식물의 땅위줄기 및 땅속에 있는 뿌리에서 나와 공기 가운데 노출되어 있는 뿌리]가 나와 다른 물체를 타고 올라간다. 어린가지와 잎, 꽃에 털이 있으나 자라면서 없어진다. 잎은 어긋나고 윤기가 나는 녹색이며 가장자리는 밋밋하다."
         },
         en: { name: "Korean ivy", scientific: "Hedera rhombea", distribution: "Incheon, Chungcheongnam-do, Gyeongsangnam-do, Ulleungdo, Jeollabuk-do, Jeollanam-do, and Jeju Island in Korea; Taiwan and Japan south of central Honshu", family: "Araliaceae", feature: "It can grow to over 10 meters long. This climbing vine produces aerial roots along its main stem and uses them to attach itself to other surfaces. Young branches, leaves, and flowers are hairy, but lose their hairs as they mature. The leaves are alternate, glossy green, and have smooth edges." },
         zh: { name: "常春藤（韩国常春藤）", scientific: "Hedera rhombea", distribution: "韩国的仁川、忠清南道、庆尚南道、郁陵岛、全罗北道、全罗南道和济州岛；台湾及日本本州中部以南地区", family: "五加科", feature: "植株可长至10米以上。它是一种藤本植物，主茎会长出气生根，并借此攀附其他物体。幼枝、叶片和花上有毛，成熟后逐渐脱落。叶片互生，呈有光泽的绿色，边缘平滑。" },
@@ -831,10 +814,10 @@
         lat: 33.515657208255355,
         lng: 126.51072185998885,
         ko: { name: "바랭이",
-          			scientific: "Digitaria ciliaris",
-              distribution: "대한민국",
-              family: "벼과",
-              feature: " 바랭이는 일년생잡초로서,밭,밭둑,과원,도로변 및 공한지에 발생한다. 바랭이는 대표적인 밭 잡초로서 여름 밭작물 재배지에서 가장 문제되는 잡초 중의 하나이다. 이른 봄 기온이 13°C경에 발생하기 시작하여 15~20°C 조건에서다발생하며,7~8월에도 발생하는 등 발생기간이 길다."
+          scientific: "Digitaria ciliaris",
+          distribution: "대한민국",
+          family: "벼과",
+          feature: " 바랭이는 일년생잡초로서,밭,밭둑,과원,도로변 및 공한지에 발생한다. 바랭이는 대표적인 밭 잡초로서 여름 밭작물 재배지에서 가장 문제되는 잡초 중의 하나이다. 이른 봄 기온이 13°C경에 발생하기 시작하여 15~20°C 조건에서다발생하며,7~8월에도 발생하는 등 발생기간이 길다."
         },
         en: { name: "Southern crabgrass", scientific: "Digitaria ciliaris", distribution: "South Korea", family: "Poaceae", feature: "Crabgrass is an annual weed found in fields, field margins, orchards, roadsides, and vacant lots. It is a common agricultural weed and one of the most troublesome weeds in summer-grown crops. It begins emerging in early spring when temperatures reach about 13°C, emerges abundantly at 15–20°C, and can continue to appear in July and August, giving it a long emergence period." },
         zh: { name: "马唐", scientific: "Digitaria ciliaris", distribution: "韩国", family: "禾本科", feature: "马唐是一年生杂草，常见于农田、田埂、果园、路边和空地。它是典型的农田杂草，也是夏季作物种植地中较难防除的杂草之一。早春气温达到约13°C时开始萌发，在15至20°C条件下大量发生，7至8月仍可能出现，因此发生期较长。" },
@@ -846,10 +829,10 @@
         lat: 33.515602092635575,
         lng: 126.51103430966815,
         ko: { name: "우묵사스레피",
-          			scientific: "Eurya emarginata",
-              distribution: "(국내)전라남도,경상남도,울릉도,제주도, (국외)일본",
-              family: "차나무과",
-              feature: "바닷가에서 자라는 상록성떨기나무또는 작은큰키나무이다. 줄기는 높이 2~6m 정도이며, 가지가 많이 갈라진다. 열매가 쥐똥 같고 바닷가나 섬에서 자라기 때문에 갯쥐똥나무 또는 섬쥐똥나무라고도 한다."
+          scientific: "Eurya emarginata",
+          distribution: "(국내)전라남도,경상남도,울릉도,제주도, (국외)일본",
+          family: "차나무과",
+          feature: "바닷가에서 자라는 상록성떨기나무또는 작은큰키나무이다. 줄기는 높이 2~6m 정도이며, 가지가 많이 갈라진다. 열매가 쥐똥 같고 바닷가나 섬에서 자라기 때문에 갯쥐똥나무 또는 섬쥐똥나무라고도 한다."
         },
         en: { name: "Japanese eurya", scientific: "Eurya emarginata", distribution: "Jeollanam-do, Gyeongsangnam-do, Ulleungdo, and Jeju Island in Korea; Japan", family: "Pentaphylacaceae (formerly placed in Theaceae)", feature: "This evergreen shrub or small tree grows near the seashore. It usually reaches 2–6 meters in height and has many branching stems. Because its fruits resemble mouse droppings and it grows along coasts and on islands, it is also called coastal or island mouse-dropping tree." },
         zh: { name: "滨柃", scientific: "Eurya emarginata", distribution: "韩国全罗南道、庆尚南道、郁陵岛和济州岛；日本", family: "五列木科（旧分类曾归入山茶科）", feature: "这是一种生长在海边的常绿灌木或小乔木。树高约2至6米，枝条分枝较多。由于果实形似鼠粪，且常生长于海岸或岛屿，因此也有“海滨鼠李”等别称。" },
@@ -861,10 +844,10 @@
         lat: 33.5157409252613,
         lng: 126.51194573066277,
         ko: { name: "팽나무",
-          			scientific: "Celtis sinensis",
-              distribution: "한국,중국,일본",
-              family: "느릅나무과",
-              feature: "한국 원산으로 양지와 음지를 가리지 않고 산기슭이나 계곡에서 자라는 낙엽활엽교목이다. 뿌리가 튼튼하여 강한 바람에도 잘 견디고 내염성도 강해 동해안 부근에서도 생육한다."
+          scientific: "Celtis sinensis",
+          distribution: "한국,중국,일본",
+          family: "느릅나무과",
+          feature: "한국 원산으로 양지와 음지를 가리지 않고 산기슭이나 계곡에서 자라는 낙엽활엽교목이다. 뿌리가 튼튼하여 강한 바람에도 잘 견디고 내염성도 강해 동해안 부근에서도 생육한다."
         },
         en: { name: "Chinese hackberry", scientific: "Celtis sinensis", distribution: "Korea, China, and Japan", family: "Ulmaceae", feature: "Native to Korea, this deciduous broad-leaved tree grows on mountain slopes and in valleys in both sunny and shaded places. Its strong roots help it withstand powerful winds, and its high salt tolerance allows it to grow near the east coast." },
         zh: { name: "朴树", scientific: "Celtis sinensis", distribution: "韩国、中国和日本", family: "榆科", feature: "朴树原产于韩国，是一种落叶阔叶乔木，在向阳或背阴的山麓和山谷中都能生长。它的根系强健，能够抵御强风，且耐盐性较强，因此也能在东海岸附近生长。" },
@@ -876,10 +859,10 @@
         lat: 33.51564706146602,
         lng: 126.51157761010455,
         ko: { name: "망초",
-          			scientific: "Erigeron canadensis",
-              distribution: "대한민국,북아메리카,유럽,아시아권 나라 등",
-              family: "국화과",
-              feature: "망초는 여름철 계란후라이를 닮은 작고 흰 꽃을 피우는 국화과 풀이다. 길 가나 빈터에서 흔히 자라며 잡초 취급을 받기도 하지만, 봄철 어린순은 나물로 먹고 한방에서는 야재로 활용된다."
+          scientific: "Erigeron canadensis",
+          distribution: "대한민국,북아메리카,유럽,아시아권 나라 등",
+          family: "국화과",
+          feature: "망초는 여름철 계란후라이를 닮은 작고 흰 꽃을 피우는 국화과 풀이다. 길 가나 빈터에서 흔히 자라며 잡초 취급을 받기도 하지만, 봄철 어린순은 나물로 먹고 한방에서는 야재로 활용된다."
         },
         en: { name: "Canadian horseweed", scientific: "Erigeron canadensis", distribution: "South Korea, North America, Europe, and parts of Asia", family: "Asteraceae", feature: "Horseweed is an aster-family plant that produces small white flowers resembling fried eggs in summer. It commonly grows along roadsides and in vacant lots. Although often treated as a weed, its young spring shoots are eaten as a wild vegetable, and it is also used in traditional Korean medicine." },
         zh: { name: "小飞蓬", scientific: "Erigeron canadensis", distribution: "韩国、北美洲、欧洲及亚洲部分地区", family: "菊科", feature: "小飞蓬是菊科植物，夏季会开出小而白的花，外形像煎蛋。它常见于路边和空地，虽然有时被视为杂草，但春季嫩芽可作野菜食用，在韩国传统医学中也有应用。" },
@@ -891,10 +874,10 @@
         lat: 33.51574295966081,
         lng: 126.51246236466908,
         ko: { name: "미국쑥부쟁이",
-              scientific: "Symphyotrichum pilosum(Willd)G.L.Nesom",
-              distribution: "(국내) 대한민국 전역, (국외) 북아메리카",
-              family: "국화과",
-              feature: "미국쑥 부쟁이는 북아메리카 원산의 국화과 여러해살이풀로, 가을철에 가지를 빽빽하게 치며 작은 흰색 꽃을 무수히 피워낸다. 번식력과 적응력이 매우 뛰어나 길가나 빈터에서 잘 자라며, 번식이 과도해 생태계 교란 야생식물로 지정되기도 했다."
+          scientific: "Symphyotrichum pilosum(Willd)G.L.Nesom",
+          distribution: "(국내) 대한민국 전역, (국외) 북아메리카",
+          family: "국화과",
+          feature: "미국쑥 부쟁이는 북아메리카 원산의 국화과 여러해살이풀로, 가을철에 가지를 빽빽하게 치며 작은 흰색 꽃을 무수히 피워낸다. 번식력과 적응력이 매우 뛰어나 길가나 빈터에서 잘 자라며, 번식이 과도해 생태계 교란 야생식물로 지정되기도 했다."
         },
         en: { name: "Hairy fleabane", scientific: "Symphyotrichum pilosum(Willd)G.L.Nesom", distribution: "Throughout South Korea; native to North America", family: "Asteraceae", feature: "Hairy fleabane is a perennial in the aster family native to North America. In autumn, it branches densely and produces countless small white flowers. It spreads readily and adapts well, growing along roadsides and in vacant lots. Because it can spread excessively, it has also been designated as an invasive, ecosystem-disrupting wild plant." },
         zh: { name: "毛梗紫菀", scientific: "Symphyotrichum pilosum(Willd)G.L.Nesom", distribution: "韩国全境；原产于北美洲", family: "菊科", feature: "毛梗紫菀是原产于北美洲的菊科多年生草本植物。秋季枝条繁密，并开出大量细小的白花。它繁殖力强、适应性好，常生长于路边和空地。由于可能过度扩散，也被列为会扰乱生态系统的野生植物。" },
@@ -906,10 +889,10 @@
         lat: 33.51553783315414,
         lng: 126.51131452010254,
         ko: { name: "털머위",
-              scientific: "Farfugium japonicum",
-              distribution: "(국내) 제주도,울릉도,전라남도와 경상남도의 남해안 도서 지방, (국외) 일본,대만,중국 동부 지역 등",
-              family: "국화과",
-              feature: "털머위는 봄에 나는 나물인 ‘머위’와 잎 모양이 비슷하지만, 잎이 두껍고 윤기가 나며 뒷면에 잿빛 털이 빽빽하게 나서 털머위라 불린다. 털머위의 꽃말은 ‘한결같은 마음’, ‘다시 찾은 사랑’ 이다."
+          scientific: "Farfugium japonicum",
+          distribution: "(국내) 제주도,울릉도,전라남도와 경상남도의 남해안 도서 지방, (국외) 일본,대만,중국 동부 지역 등",
+          family: "국화과",
+          feature: "털머위는 봄에 나는 나물인 ‘머위’와 잎 모양이 비슷하지만, 잎이 두껍고 윤기가 나며 뒷면에 잿빛 털이 빽빽하게 나서 털머위라 불린다. 털머위의 꽃말은 ‘한결같은 마음’, ‘다시 찾은 사랑’ 이다."
         },
         en: { name: "Japanese leopard plant", scientific: "Farfugium japonicum", distribution: "Jeju Island, Ulleungdo, and the southern coastal islands of Jeollanam-do and Gyeongsangnam-do in Korea; Japan, Taiwan, and eastern China", family: "Asteraceae", feature: "The Japanese leopard plant has leaves similar in shape to butterbur, a spring edible plant, but its leaves are thicker and glossy, with dense grayish hairs on the underside—hence its Korean name meaning “hairy butterbur.” Its flower meanings include “steadfast heart” and “love found again.”" },
         zh: { name: "大吴风草", scientific: "Farfugium japonicum", distribution: "韩国济州岛、郁陵岛及全罗南道和庆尚南道南海岸岛屿；日本、台湾和中国东部等地", family: "菊科", feature: "大吴风草的叶形与春季食用的蜂斗菜相似，但叶片更厚、更有光泽，背面密生灰色绒毛，因此韩语名意为“有毛的蜂斗菜”。它的花语包括“始终如一的心”和“重拾的爱情”。" },
@@ -921,10 +904,10 @@
         lat: 33.51547639331224,
         lng: 126.51116686861859,
         ko: { name: "태양국",
-              scientific: "Gazania rigens (L.) Gaertn",
-              distribution: "(국내) 전국 각지, (국외)남아프리카 공화국,에스와티니,모잠비크,탄자니아,앙골라 등",
-              family: "국화과",
-              feature: "남아프리카 원산의 국화과 태양국은 훈장을 닮은 화려하고 선명한 꽃을 피우며, 강렬한 햇빛을 받으면 꽃잎을 열고 밤이나 어두운 날에는 다무는 특성이 있다. 건조함과 뜨거운 열기에 강해 관리가 쉽다."
+          scientific: "Gazania rigens (L.) Gaertn",
+          distribution: "(국내) 전국 각지, (국외)남아프리카 공화국,에스와티니,모잠비크,탄자니아,앙골라 등",
+          family: "국화과",
+          feature: "남아프리카 원산의 국화과 태양국은 훈장을 닮은 화려하고 선명한 꽃을 피우며, 강렬한 햇빛을 받으면 꽃잎을 열고 밤이나 어두운 날에는 다무는 특성이 있다. 건조함과 뜨거운 열기에 강해 관리가 쉽다."
         },
         en: { name: "Gazania", scientific: "Gazania rigens (L.) Gaertn", distribution: "Throughout Korea; South Africa, Eswatini, Mozambique, Tanzania, Angola, and other parts of southern Africa", family: "Asteraceae", feature: "Gazania, native to South Africa, produces vivid, showy flowers resembling medals. Its flower heads open in strong sunlight and close at night or on cloudy days. It tolerates dry conditions and heat, making it easy to care for." },
         zh: { name: "勋章菊", scientific: "Gazania rigens (L.) Gaertn", distribution: "韩国各地；南非、斯威士兰、莫桑比克、坦桑尼亚、安哥拉等地", family: "菊科", feature: "勋章菊原产于南非，开出鲜艳夺目、形似勋章的花朵。阳光强烈时花朵开放，夜间或阴暗天气则闭合。它耐干旱、耐高温，因此较容易养护。" },
@@ -936,20 +919,16 @@
         lat: 33.515658792623036,
         lng: 126.51283955705702,
         ko: { name: "비파 나무",
-              scientific: "Eriobotrya japonica(Thunb.).Lindl",
-              distribution: "(국내)제주도,전라남도,경상남도 등, (국외)중국,일본,인도,동남아시아권 나라들",
-              family: "장미과",
-              feature: "비파 나무는 우리나라 남부 지방과 제주도에서 자라는 장미과 상록 활엽 소교목으로, 잎 모양이 악기 비파를 닮아 붙여진 이름이다. 겨울에 향기로운 흰 꽃을 피우고 초여름에 달콤한 노란 열매를 맺으며, 열매는 식용하고 잎은 기침이나 진통 치료용 약재로 널리 쓰인다."
+          scientific: "Eriobotrya japonica(Thunb.).Lindl",
+          distribution: "(국내)제주도,전라남도,경상남도 등, (국외)중국,일본,인도,동남아시아권 나라들",
+          family: "장미과",
+          feature: "비파 나무는 우리나라 남부 지방과 제주도에서 자라는 장미과 상록 활엽 소교목으로, 잎 모양이 악기 비파를 닮아 붙여진 이름이다. 겨울에 향기로운 흰 꽃을 피우고 초여름에 달콤한 노란 열매를 맺으며, 열매는 식용하고 잎은 기침이나 진통 치료용 약재로 널리 쓰인다."
         },
         en: { name: "Loquat", scientific: "Eriobotrya japonica(Thunb.).Lindl", distribution: "Jeju Island, Jeollanam-do, Gyeongsangnam-do, and other parts of southern Korea; China, Japan, India, and Southeast Asia", family: "Rosaceae", feature: "The loquat is an evergreen broad-leaved small tree in the rose family that grows in southern Korea and on Jeju Island. Its leaves resemble the traditional stringed instrument called a pipa, which inspired its name. It produces fragrant white flowers in winter and sweet yellow fruits in early summer. The fruits are edible, and the leaves have been widely used in traditional remedies for coughs and pain." },
         zh: { name: "枇杷树", scientific: "Eriobotrya japonica(Thunb.).Lindl", distribution: "韩国济州岛、全罗南道、庆尚南道等南部地区；中国、日本、印度及东南亚国家", family: "蔷薇科", feature: "枇杷树是蔷薇科常绿阔叶小乔木，生长于韩国南部和济州岛。它的叶形像传统乐器琵琶，因此得名。冬季开出芳香的白花，初夏结出甜美的黄色果实。果实可食用，叶片也常用于传统疗法，以缓解咳嗽和疼痛。" },
         ja: { name: "ビワ", scientific: "Eriobotrya japonica(Thunb.).Lindl", distribution: "韓国の済州島・全羅南道・慶尚南道など、中国、日本、インド、東南アジア諸国", family: "バラ科", feature: "ビワは韓国南部や済州島に生育するバラ科の常緑広葉小高木です。葉の形が楽器の琵琶に似ていることから名付けられました。冬に香りのよい白い花を咲かせ、初夏に甘い黄色の果実を実らせます。果実は食用となり、葉は咳や痛みを和らげる伝統薬として広く利用されてきました。" }
       }
     ];
-
-    /* =========================================================
-       2. 기본 설정
-       ========================================================= */
 
     const COLLECTION_RADIUS_METERS = 40;
     const STORAGE_KEY = "jejuPlantDexCollected_v1";
@@ -984,7 +963,6 @@
         noGps: "위치 정보를 가져올 수 없습니다. 위치 권한을 확인해 주세요.",
         gpsLoading: "현재 위치를 확인하고 있습니다...",
         gpsSuccess: "현재 위치를 지도에 표시했습니다.",
-        tooFar: "아직 식물 위치와 거리가 있어요. 조금 더 가까이 이동해 주세요.",
         already: "이미 수집한 식물입니다!",
         success: "🎉 식물 수집!",
         permission: "카메라 권한을 허용해 주세요. 또는 사진 파일을 선택할 수 있습니다.",
@@ -1029,7 +1007,6 @@
         noGps: "Unable to get your location. Check location permissions.",
         gpsLoading: "Finding your location...",
         gpsSuccess: "Your location has been added to the map.",
-        tooFar: "You are still too far away. Move closer to the plant location.",
         already: "This plant has already been collected!",
         success: "🎉 Plant collected!",
         permission: "Allow camera access or choose an image file.",
@@ -1074,7 +1051,6 @@
         noGps: "无法获取位置。请检查位置权限。",
         gpsLoading: "正在获取当前位置……",
         gpsSuccess: "已在地图上显示您的位置。",
-        tooFar: "距离植物位置仍较远，请再靠近一些。",
         already: "这株植物已经收集过了！",
         success: "🎉 植物收集成功！",
         permission: "请允许使用相机，或选择图片文件。",
@@ -1119,7 +1095,6 @@
         noGps: "位置情報を取得できません。位置情報の権限を確認してください。",
         gpsLoading: "現在地を確認しています……",
         gpsSuccess: "現在地を地図に表示しました。",
-        tooFar: "植物の位置からまだ遠いです。もう少し近づいてください。",
         already: "この植物はすでに収集済みです！",
         success: "🎉 植物を収集！",
         permission: "カメラの使用を許可するか、画像ファイルを選択してください。",
@@ -1156,10 +1131,6 @@
 
     const $ = (id) => document.getElementById(id);
     const t = (key) => words[language][key] || words.ko[key] || key;
-
-    /* =========================================================
-       3. 지도 생성 및 식물 마커
-       ========================================================= */
 
     const validPlants = plants.filter(p =>
       Number.isFinite(p.lat) &&
@@ -1222,10 +1193,6 @@
     }
 
     addPlantMarkers();
-
-    /* =========================================================
-       4. 거리 및 GPS
-       ========================================================= */
 
     function distanceMeters(lat1, lng1, lat2, lng2) {
       const R = 6371000;
@@ -1324,10 +1291,6 @@
         }
       );
     }
-
-    /* =========================================================
-       5. 식물 카드 및 도감
-       ========================================================= */
 
     function renderPlantCards() {
       const list = $("plantList");
@@ -1515,10 +1478,6 @@
       $("detailModal").classList.add("show");
     }
 
-    /* =========================================================
-       6. 카메라 및 사진 선택
-       ========================================================= */
-
     async function openCamera(id) {
       const plant = plants.find(p => p.id === id);
       if (!plant) return;
@@ -1632,6 +1591,9 @@
 
     /* =========================================================
        7. 수집 처리
+       ---------------------------------------------------------
+       거리 제한을 제거하여 GPS 위치와 관계없이
+       사진 확인 후 식물을 수집할 수 있도록 수정했습니다.
        ========================================================= */
 
     function confirmCollection() {
@@ -1642,18 +1604,6 @@
 
       if (collected.has(activePlant.id)) {
         alert(t("already"));
-        return;
-      }
-
-      if (!userPosition) {
-        alert(t("noGps"));
-        return;
-      }
-
-      const distance = getDistanceToPlant(activePlant);
-
-      if (distance === null || distance > COLLECTION_RADIUS_METERS) {
-        alert(t("tooFar"));
         return;
       }
 
@@ -1686,10 +1636,6 @@
       }, 1400);
     }
 
-    /* =========================================================
-       8. 언어 전환
-       ========================================================= */
-
     function applyLanguage() {
       document.documentElement.lang = language;
 
@@ -1720,10 +1666,6 @@
       language = event.target.value;
       applyLanguage();
     });
-
-    /* =========================================================
-       9. 버튼 이벤트
-       ========================================================= */
 
     $("openDexBtn").addEventListener("click", () => {
       renderDex();
@@ -1762,10 +1704,6 @@
         });
       }
     });
-
-    /* =========================================================
-       10. 최초 실행
-       ========================================================= */
 
     $("languageSelect").value = language;
     applyLanguage();
